@@ -1,4 +1,8 @@
 Este es un documento de ejemplo
 
+<<<<<<< Updated upstream
 hla
 si
+=======
+hoola
+>>>>>>> Stashed changes
