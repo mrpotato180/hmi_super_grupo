@@ -23,7 +23,7 @@ EEG = pop_eegfiltnew(EEG, 'locutoff',0.3,'hicutoff',70,'plotfreqz',0);
 EEG = eeg_checkset( EEG );
 
 %below is the typical eeglab ica procedure for any algorithm
-EEG.icawinv = acsobiro(EEG.data);
+EEG.icawinv = sobi(EEG.data);
 if isempty(EEG.icaweights)
     EEG.icaweights = pinv(EEG.icawinv);
 end
@@ -41,11 +41,11 @@ EEG = eeg_checkset( EEG );
 comp_rej_lst=[];
 
 for k=1:EEG.nbchan
-    if EEG.etc.ic_classification.ICLabel.classifications(k,3)>0.5
+    if EEG.etc.ic_classification.ICLabel.classifications(k,3)>0.85
         comp_rej_lst=[comp_rej_lst,k];
     end
     for i=[2,4,5,6,7]
-        if EEG.etc.ic_classification.ICLabel.classifications(k,i)>0.7
+        if EEG.etc.ic_classification.ICLabel.classifications(k,i)>0.85
             comp_rej_lst=[comp_rej_lst,k];
         end
     end
