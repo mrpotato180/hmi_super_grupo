@@ -1,4 +1,4 @@
-function d2_bad_trials(subject_list,movement_code,eeglab_ica_bool,auto_detect_movement)
+function d2_bad_trials(subject_list,movement_code,eeglab_ica_bool,auto_detect_movement,datapath,icapath)
 cont=0;
 cont2=1;
 count3=1;
@@ -29,14 +29,13 @@ if movement_code==1536
         if exist("bad_trials_1536_with_ica.mat","file")
             return
         else
-            disp("Calculating bad trials for Elbow flexion")
-            sr=matfile("filtered_data_with_ica.mat");
+            boxmsg="Calculating bad trials for Elbow flexion";
         end
     else
         if exist("bad_trials_1536.mat","file")
             return
         else
-            disp("Calculating bad trials for Elbow flexion")
+            boxmsg="Calculating bad trials for Elbow flexion";
         end
     end
 end
@@ -45,14 +44,13 @@ if movement_code==1541
         if exist("bad_trials_1541_with_ica.mat","file")
             return
         else
-            disp("Calculating bad trials for Elbow flexion")
-            sr=matfile("filtered_data_with_ica.mat");
+            boxmsg="Calculating bad trials for Hand Opening";
         end
     else
         if exist("bad_trials_1541.mat","file")
             return
         else
-            disp("Calculating bad trials for Elbow flexion")
+            boxmsg="Calculating bad trials for Hand Opening";
         end
     end
 end
@@ -60,35 +58,35 @@ end
 close(findall(0,'type','figure','tag','TMWWaitbar'))
 
 for i=1:length(subject_list)
-    folder_path=dir("data\").folder;
-    curr_folder=append(folder_path,'\',subject_list(i));
+    if eeglab_ica_bool
+        icapath2=append(icapath,'\',subject_list(i));
+        icanames=dir(icapath2);
+        
+    end
+    curr_folder=append(datapath,'\',subject_list(i));
+    
     filenames=dir(curr_folder);
     for j=1:10
         if isempty(findall(0,'type','figure','tag','TMWWaitbar'))
-                waiter=waitbar(0,'Calculating...','Name','Bad trials');
+                waiter=waitbar(0,'Calculating...','Name',boxmsg);
         end
-        waitbar(((j-1)+((i-1)*10))/80,waiter,strcat('Preparing run ',string(j), ' from subject  ',string(subject_list(i))),'Name','Bad trials');
+        waitbar(((j-1)+((i-1)*10))/80,waiter,strcat('Preparing run ',string(j), ' from subject  ',string(subject_list(i))),'Name',boxmsg);
         filename = filenames(j+2).name;
         path=append(curr_folder,'\',filename);
-        if ~eeglab_ica_bool
         sr=load(path);
-        channels=sr.EEG.data(1:61,:);
-       % Band-pass filtering (0.3-70Hz) all the EEG data (channels 1 to 61)
-        filteredchannels=butterfilter(channels);
         Events=sr.EEG.events(:,:);
+        if ~eeglab_ica_bool
+            channels=sr.EEG.data(1:61,:);
+            % Band-pass filtering (0.3-70Hz) all the EEG data (channels 1 to 61)
+            filteredchannels=butterfilter(channels);
+        else
+            icaname = icanames(j+2).name;
+            icafile=append(icapath2,'\',icaname);
+            sr=load(icafile);
+            filteredchannels=sr.filtered_data(:,:);
         end
-        toc(fstart)
-        if eeglab_ica_bool
-            filteredchannels=sr.filtered_data_subject(:,:,j,i);
-            toc(fstart)
-            srs=matfile(path);
-            eegevents=srs.EEG;
-            Events=eegevents.events(:,:);
-        end
-        toc(fstart)
-        
-
-        % Signal segmentation- acquiring the different trials
+    
+         % Signal segmentation- acquiring the different trials
         
         for w = 1:length(Events(:,1))
             if Events(w,1) == movement_code
@@ -108,9 +106,12 @@ end
 
 close(findall(0,'type','figure','tag','TMWWaitbar'))
 
-if auto_detect_movement  
-    [events_matrix_1536,~,~] = Optional2_dunction(subject_list,events_matrix_1536,movement_code);
+
+if auto_detect_movement
+    [events_matrix_1536,~,~] = Optional2_dunction(subject_list,events_matrix_1536,movement_code,datapath);
+
 end
+clearvars channels sr
 %%
 % For each trial and EEG channel, subtract the mean value of each channel (zero-mean). 
 matrix_detrend=zeros(61,4352,60,8);
@@ -139,7 +140,8 @@ for q = 1:length(bad_channels(:,1,1)) %subjects
             end
         end
     end
-end 
+end
+clearvars bad_channels
 %%
 % Calculating kurtosis
 kurt_trial_channel=ones(61,60,8);
@@ -173,13 +175,14 @@ for h=1:8
                 conditions_matrix(x,i,h)=0; 
             end
             % Mark bad trial if its amplitude exceeds ±150µV
-            if max(abs(matrix_detrend(x,:,i,h),[],'omitnan'))>150
+            if max(abs(matrix_detrend(x,:,i,h)),[],'omitnan')>150
                 conditions_matrix(x,i,h)=0;
                 count=count+1;
             end 
         end
     end
 end
+clearvars matrix_detrend
 %%
 %  mark a trial as bad if the number of free-artifact channels is lower than
 % the 75% of channels
@@ -191,7 +194,7 @@ for i = 1:length(conditions_matrix(1,1,:))
     end
 end
 %disp("here we still have 95% good trials")
-clearvars bad_channels channels kurt_trial_channel
+clearvars kurt_trial_channel
 %%
 % Mark trials as bad if:
     % -The physical movement starts before 100ms from the appearance of the stimulus
@@ -216,35 +219,29 @@ for p = 1:8
 end
 %% 
 
-for channel=1:61
-    for trial=1:60
-        for subject =1:8
-            if conditions_matrix(channel,trial,subject) == 0
-                matrix_detrend(channel,:,trial,subject) = nan;
-            end
-        end
-    end      
-end
+
 if movement_code==1536
     if eeglab_ica_bool && ~auto_detect_movement
-    save('bad_trials_1536_with_ica.mat', "matrix_detrend")
+    save('bad_trials_1536_with_ica.mat', "conditions_matrix")
     elseif eeglab_ica_bool && auto_detect_movement
-    save('bad_trials_1536_with_ica_with_auto.mat', "matrix_detrend")
+    save('bad_trials_1536_with_ica_with_auto.mat', "conditions_matrix")
     elseif ~eeglab_ica_bool && auto_detect_movement
-    save('bad_trials_1536_with_auto.mat', "matrix_detrend")
+    save('bad_trials_1536_with_auto.mat', "conditions_matrix")
     else
-    save('bad_trials_1536.mat', "matrix_detrend")
+    save('bad_trials_1536.mat', "conditions_matrix")
     end
 end
 if movement_code==1541
     if eeglab_ica_bool && ~auto_detect_movement
-    save('bad_trials_1541_with_ica.mat', "matrix_detrend")
+    save('bad_trials_1541_with_ica.mat', "conditions_matrix")
     elseif eeglab_ica_bool && auto_detect_movement
-    save('bad_trials_1541_with_ica_with_auto.mat', "matrix_detrend")
+    save('bad_trials_1541_with_ica_with_auto.mat', "conditions_matrix")
     elseif ~eeglab_ica_bool && auto_detect_movement
-    save('bad_trials_1541_with_auto.mat', "matrix_detrend")
+    save('bad_trials_1541_with_auto.mat', "conditions_matrix")
     else
-    save('bad_trials_1541.mat', "matrix_detrend")
+    save('bad_trials_1541.mat', "conditions_matrix")
     end
 end
+tEnd=toc(fstart);
+disp(['Elapsed time is ' num2str(floor(tEnd/60))  ' minutes and ' num2str(rem(tEnd,60)) ' seconds']);
 end
