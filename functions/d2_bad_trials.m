@@ -173,7 +173,7 @@ for h=1:8
                 conditions_matrix(x,i,h)=0; 
             end
             % Mark bad trial if its amplitude exceeds ±150µV
-            if max(matrix_detrend(x,:,i,h),[],'omitnan')>150
+            if max(abs(matrix_detrend(x,:,i,h),[],'omitnan'))>150
                 conditions_matrix(x,i,h)=0;
                 count=count+1;
             end 
