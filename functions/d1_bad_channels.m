@@ -41,7 +41,6 @@ close(findall(0,'type','figure','tag','TMWWaitbar'))
             else
                 [badchannels_subject(i,j,:),filtered_data]= channel_rejection(path,eeglab_ICA_bool, 'a');
             end
-            filtered_data=cat(2,filtered_data,zeros(61,200000-length(filtered_data(1,:))));
             if eeglab_ICA_bool
                 save_path=strcat(icapath,'\',subject_list(i),'\filtered_data_',string(j),'.mat');
                 save(save_path,"filtered_data")

@@ -1,4 +1,4 @@
-function d2_bad_trials(subject_list,movement_code,eeglab_ica_bool,auto_detect_movement,datapath,icapath)
+function d2_bad_trials(subject_list,movement_code,eeglab_ica_bool,auto_detect_movement,datapath,icapath,resfolder)
 cont=0;
 cont2=1;
 count3=1;
@@ -201,17 +201,17 @@ clearvars kurt_trial_channel
     % -The movement starts after 2s from the appearance of the stimulus.
 
 count4=0;
-for p = 1:8
-    for i= 1:6
-        for j=1:10
+for p = 1:8 %subjects
+    for j= 1:10 %runs
+        for i=1:6 %trials
             if (events_matrix_1536(i,3,j,p)==0) 
-                conditions_matrix(:,(i-1)*10+j,p)=0;
+                conditions_matrix(:,(j-1)*6+i,p)=0;
                 count4=count4+1;
             elseif((events_matrix_1536(i,3,j,p)-events_matrix_1536(i,2,j,p))<(512*0.1))
-                conditions_matrix(:,(i-1)*10+j,p)=0;
+                conditions_matrix(:,(j-1)*6+i,p)=0;
                 count4=count4+1;
             elseif((events_matrix_1536(i,3,j,p)-events_matrix_1536(i,2,j,p))>(512*2))
-                conditions_matrix(:,(i-1)*10+j,p)=0;
+                conditions_matrix(:,(j-1)*6+i,p)=0;
                 count4=count4+1;
             end
         end
@@ -222,24 +222,48 @@ end
 
 if movement_code==1536
     if eeglab_ica_bool && ~auto_detect_movement
-    save('bad_trials_1536_with_ica.mat', "conditions_matrix")
+        bt=strcat(resfolder,'\bad_trials_1536_with_ica.mat');
+        et=strcat(resfolder,'\events_matrix_1536_with_ica.mat');
+        save(bt, "conditions_matrix")
+        save(et, "events_matrix_1536")
     elseif eeglab_ica_bool && auto_detect_movement
-    save('bad_trials_1536_with_ica_with_auto.mat', "conditions_matrix")
+        bt=strcat(resfolder,'\bad_trials_1536_with_ica_with_auto.mat');
+        et=strcat(resfolder,'\events_matrix_1536_with_ica_with_auto.mat');
+        save(bt, "conditions_matrix")
+        save(et, "events_matrix_1536")
     elseif ~eeglab_ica_bool && auto_detect_movement
-    save('bad_trials_1536_with_auto.mat', "conditions_matrix")
+        bt=strcat(resfolder,'\bad_trials_1536_with_auto.mat');
+        et=strcat(resfolder,'\events_matrix_1536_with_auto.mat');
+        save(bt, "conditions_matrix")
+        save(et, "events_matrix_1536")
     else
-    save('bad_trials_1536.mat', "conditions_matrix")
+        bt=strcat(resfolder,'\bad_trials_1536.mat');
+        et=strcat(resfolder,'\events_matrix_1536.mat');
+        save(bt, "conditions_matrix")
+        save(et, "events_matrix_1536")
     end
 end
 if movement_code==1541
-    if eeglab_ica_bool && ~auto_detect_movement
-    save('bad_trials_1541_with_ica.mat', "conditions_matrix")
+   if eeglab_ica_bool && ~auto_detect_movement
+        bt=strcat(resfolder,'\bad_trials_1541_with_ica.mat');
+        et=strcat(resfolder,'\events_matrix_1541_with_ica.mat');
+        save(bt, "conditions_matrix")
+        save(et, "events_matrix_1536")
     elseif eeglab_ica_bool && auto_detect_movement
-    save('bad_trials_1541_with_ica_with_auto.mat', "conditions_matrix")
+        bt=strcat(resfolder,'\bad_trials_1541_with_ica_with_auto.mat');
+        et=strcat(resfolder,'\events_matrix_1541_with_ica_with_auto.mat');
+        save(bt, "conditions_matrix")
+        save(et, "events_matrix_1536")
     elseif ~eeglab_ica_bool && auto_detect_movement
-    save('bad_trials_1541_with_auto.mat', "conditions_matrix")
+        bt=strcat(resfolder,'\bad_trials_1541_with_auto.mat');
+        et=strcat(resfolder,'\events_matrix_1541_with_auto.mat');
+        save(bt, "conditions_matrix")
+        save(et, "events_matrix_1536")
     else
-    save('bad_trials_1541.mat', "conditions_matrix")
+        bt=strcat(resfolder,'\bad_trials_1541.mat');
+        et=strcat(resfolder,'\events_matrix_1541.mat');
+        save(bt, "conditions_matrix")
+        save(et, "events_matrix_1536")
     end
 end
 tEnd=toc(fstart);
