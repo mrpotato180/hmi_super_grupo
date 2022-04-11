@@ -27,6 +27,7 @@ close(findall(0,'type','figure','tag','TMWWaitbar'))
                 mkdir(strcat(icapath,'\',subject_list(i)));
             end
         end
+        disp(subject_list(i))
         
         for j=1:10
             

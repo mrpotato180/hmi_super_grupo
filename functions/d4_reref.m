@@ -54,15 +54,15 @@ events=events.events_matrix_1536;
                 
             sr=load(strcat(basefolder(1).folder,'\',subject_list(i),'\',curr_folder(j+2).name), "-mat");
             
-            %try
-                sr=sr.EEG.data(1:61,:);
+            try
+                sr=sr.EEG.data(1:61,:); %if no ica is chosen
                 %sr=butterfilter(sr,70);
                 for ch=1:61
                 sr(ch,:)=detrend(sr(ch,:),'constant');
                 end
-            %catch
-                %sr=sr.filtered_data(:,:);
-            %end
+            catch
+                sr=sr.filtered_data(:,:); %if ica is chosen
+            end
         end
     end
 
