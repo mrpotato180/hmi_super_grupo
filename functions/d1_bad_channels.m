@@ -2,9 +2,9 @@
 %NOTE: This function is used to select the bad channels. In order to
 % achieve this, it is using the "channel_rejection" function.
 
-function badchannels_subject=d1_bad_channels(subject_list,eeglab_ICA_bool,locs)
+function badchannels_subject=d1_bad_channels(subject_list,eeglab_ICA_bool,locs,datapath,icapath)
 badchannels_subject=zeros(8,10,61,'int8');
-filtered_data_subject=zeros(61,200000,10,8);
+tstart=tic;
 if ~eeglab_ICA_bool
     if exist("bad_channels.mat","file")
     msgbox('The old bad channel file was taken.ICA is off.');
@@ -12,7 +12,7 @@ if ~eeglab_ICA_bool
     end
 end
 if eeglab_ICA_bool
-    if exist("bad_channels_with_ica.mat","file")
+    if exist("icapath","file") % esto necesita atención
     msgbox('The old bad channel file was taken. ICA is on.');
     return
     end
@@ -20,9 +20,14 @@ if eeglab_ICA_bool
 end
 close(findall(0,'type','figure','tag','TMWWaitbar'))
     for i=1:length(subject_list)
-        folder_path=dir("data\").folder;
-        curr_folder=append(folder_path,'\',subject_list(i));
+        curr_folder=append(datapath,'\',subject_list(i));
         filenames=dir(curr_folder);
+        if eeglab_ICA_bool
+            if ~exist(strcat(icapath,'\',subject_list(i)), 'dir')
+                mkdir(strcat(icapath,'\',subject_list(i)));
+            end
+        end
+        disp(subject_list(i))
         
         for j=1:10
             
@@ -37,17 +42,26 @@ close(findall(0,'type','figure','tag','TMWWaitbar'))
             else
                 [badchannels_subject(i,j,:),filtered_data]= channel_rejection(path,eeglab_ICA_bool, 'a');
             end
-            filtered_data=cat(2,filtered_data,zeros(61,200000-length(filtered_data(1,:))));
-            filtered_data_subject(:,:,j,i)=filtered_data;
+            if eeglab_ICA_bool
+                save_path=strcat(icapath,'\',subject_list(i),'\filtered_data_',string(j),'.mat');
+                save(save_path,"filtered_data")
+            end
+          
         end
-    end
+   end
+        
+       
     close(findall(0,'type','figure','tag','TMWWaitbar'))
+    
     %C=num2cell(filtered_data_subject,[1,]);
-    if ~eeglab_ICA_bool
+if ~eeglab_ICA_bool
+
         save("bad_channels.mat","badchannels_subject")
 
     else
         save("bad_channels_with_ica.mat","badchannels_subject")
-        save("filtered_data_with_ica.mat","filtered_data_subject",'-v7.3')
-    end
+        clearvars -global globalvars{:} globalvars
+
 end
+tEnd = toc(tstart);
+disp(['Elapsed time is ' num2str(floor(tEnd/60))  ' minutes and ' num2str(rem(tEnd,60)) ' seconds']);

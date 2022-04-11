@@ -1,24 +1,22 @@
-function [samples_of_movement_1536,residous,chanels_93] = Optional2_dunction(subject_list,events_matrix_1536,event_code)
+function [samples_of_movement_1536,residous,chanels_93] = Optional2_dunction(subject_list,events_matrix_1536,event_code,datapath)
 
 if event_code == 1536
     channel_number=93;
     thres_variable=8;
     thres_variable2=0.045;
-    disp('working on events matrix for movement 1536')
 elseif event_code == 1541
     channel_number=69;
     thres_variable=-0.028;
     thres_variable2=0.005;
-    disp('working on events matrix for movement 1541')
 end
 
-tracatra=tic;
+
 
  
 chanels_93=zeros(10,200000,8);
 
 for i=1:length(subject_list)
-    folder_path=dir("data\").folder;
+    folder_path=datapath;
     curr_folder=append(folder_path,'\',subject_list(i));
     filenames=dir(curr_folder);
     for j=1:10
@@ -29,7 +27,6 @@ for i=1:length(subject_list)
         chanels_93(j,1:length(sr.EEG.data(1,:)),i)=sr.EEG.data(channel_number,:);
     end
 end
-toc(tracatra)
 %events_matrix_1536=zeros(6,3,10,8);
 
 samples_of_movement_1536=zeros(6,3,10,8);
@@ -96,6 +93,6 @@ for j = 1:8
     end
 end
 M4=mean(mean(mean(testingresidous)));
-M5 = ['The average in seconds with respect to the provided events is: ',num2str(M4/512),'s'];
+M5 = ['The average difference with respect to the provided events is: ',num2str(M4/512),'s'];
 disp(M5)
 
