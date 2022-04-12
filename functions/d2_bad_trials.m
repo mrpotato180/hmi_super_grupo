@@ -1,4 +1,4 @@
-function d2_bad_trials(subject_list,movement_code,eeglab_ica_bool,auto_detect_movement,datapath,icapath,resfolder)
+function [mean_subject_matrix, grand_mean_matrix]=d2_bad_trials(subject_list,movement_code,eeglab_ica_bool,auto_detect_movement,datapath,icapath,resfolder)
 cont=0;
 cont2=1;
 count3=1;
@@ -26,13 +26,15 @@ end
     
 if movement_code==1536
     if eeglab_ica_bool
-        if exist("bad_trials_1536_with_ica.mat","file")
+        load_file=strcat(resfolder,"\bad_trials_1536_with_ica.mat");
+        if exist(load_file,"file")
             return
         else
             boxmsg="Calculating bad trials for Elbow flexion";
         end
     else
-        if exist("bad_trials_1536.mat","file")
+        load_file=strcat(resfolder,"\bad_trials_1536.mat");
+        if exist(load_file,"file")
             return
         else
             boxmsg="Calculating bad trials for Elbow flexion";
@@ -41,13 +43,15 @@ if movement_code==1536
 end
 if movement_code==1541
     if eeglab_ica_bool
-        if exist("bad_trials_1541_with_ica.mat","file")
+        load_file=strcat(resfolder,"\bad_trials_1541_with_ica.mat");
+        if exist(load_file,"file")
             return
         else
             boxmsg="Calculating bad trials for Hand Opening";
         end
     else
-        if exist("bad_trials_1541.mat","file")
+        load_file=strcat(resfolder,"\bad_trials_1541.mat");
+        if exist(load_file,"file")
             return
         else
             boxmsg="Calculating bad trials for Hand Opening";
@@ -78,7 +82,7 @@ for i=1:length(subject_list)
         if ~eeglab_ica_bool
             channels=sr.EEG.data(1:61,:);
             % Band-pass filtering (0.3-70Hz) all the EEG data (channels 1 to 61)
-            filteredchannels=butterfilter(channels);
+            filteredchannels=butterfilter(channels,70);
         else
             icaname = icanames(j+2).name;
             icafile=append(icapath2,'\',icaname);
@@ -182,7 +186,6 @@ for h=1:8
         end
     end
 end
-clearvars matrix_detrend
 %%
 %  mark a trial as bad if the number of free-artifact channels is lower than
 % the 75% of channels
@@ -218,8 +221,24 @@ for p = 1:8 %subjects
     end
 end
 %% 
+mean_subject_matrix=zeros(61,4352,8);
+for i=1:8
+    for j=1:10
+        for tr=1:6
+                if conditions_matrix(:,(j-1)*6+tr,i)==0
+                    matrix_detrend(:,:,(j-1)*6+tr,i)=nan;
+                end
+        end
+    end
+    
+   mean_subject_matrix(:,:,i)=mean(matrix_detrend(:,:,:,i),3,'omitnan');
+   
+    
+end
+grand_mean_matrix=squeeze(mean(mean_subject_matrix,3));
+clearvars matrix_detrend
 
-
+%%
 if movement_code==1536
     if eeglab_ica_bool && ~auto_detect_movement
         bt=strcat(resfolder,'\bad_trials_1536_with_ica.mat');

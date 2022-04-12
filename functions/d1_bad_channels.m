@@ -2,17 +2,19 @@
 %NOTE: This function is used to select the bad channels. In order to
 % achieve this, it is using the "channel_rejection" function.
 
-function badchannels_subject=d1_bad_channels(subject_list,eeglab_ICA_bool,locs,datapath,icapath)
+function badchannels_subject=d1_bad_channels(subject_list,eeglab_ICA_bool,locs,datapath,icapath,resfolder)
 badchannels_subject=zeros(8,10,61,'int8');
 tstart=tic;
 if ~eeglab_ICA_bool
-    if exist("bad_channels.mat","file")
+    load_path=strcat(resfolder,"\bad_channels.mat");
+    if exist(load_path,"file")
     msgbox('The old bad channel file was taken.ICA is off.');
     return
     end
 end
 if eeglab_ICA_bool
-    if exist("icapath","file") % esto necesita atención
+    load_path=strcat(resfolder,"\bad_channels_with_ica.mat");
+    if exist(load_path,"file")
     msgbox('The old bad channel file was taken. ICA is on.');
     return
     end
@@ -55,12 +57,13 @@ close(findall(0,'type','figure','tag','TMWWaitbar'))
     
     %C=num2cell(filtered_data_subject,[1,]);
 if ~eeglab_ICA_bool
+        save_path=strcat(resfolder,"\bad_channels.mat");
+        save(save_path,"badchannels_subject")
 
-        save("bad_channels.mat","badchannels_subject")
-
-    else
-        save("bad_channels_with_ica.mat","badchannels_subject")
-        clearvars -global globalvars{:} globalvars
+else
+        save_path=strcat(resfolder,"\bad_channels_with_ica.mat");
+        save(save_path,"badchannels_subject")
+        clearvars -global EEG ALLCOM ALLEEG CURRENTSET CURRENTSTUDY PLUGINLIST STUDY LASTCOM
 
 end
 tEnd = toc(tstart);
