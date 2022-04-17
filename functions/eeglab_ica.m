@@ -4,6 +4,8 @@ function eegout=eeglab_ica(path,loc)
 %ica decomposition
 load(path,"-mat",'EEG')
 a=cat(1,EEG.data(62:64,:),EEG.data(1:61,:)); %add the EOG channels to the beginning of the variable
+a=butterfilter(a,70);%filter the signal, it was found it is better to filter before ica, not after
+
 %this was done because when performing the ica rejection by hand, it was
 %noticed that this produces better results
 save("temp.mat","a","-mat") 
@@ -15,11 +17,6 @@ EEG = pop_importdata('dataformat','matlab','nbchan',0,'data','temp.mat','srate',
 %we have now imported the data and channels into eeglab with the correct
 %sampling rate
 [ALLEEG EEG CURRENTSET] = pop_newset(ALLEEG, EEG, 0,'gui','off');
-EEG = eeg_checkset( EEG );
-%then, we perform a filtering before performing the ICA, this improves the
-%results
-EEG = pop_eegfiltnew(EEG, 'locutoff',0.3,'hicutoff',70,'plotfreqz',0);
-[ALLEEG EEG CURRENTSET] = pop_newset(ALLEEG, EEG, 1,'gui','off'); 
 EEG = eeg_checkset( EEG );
 
 %below is the typical eeglab ica procedure for any algorithm

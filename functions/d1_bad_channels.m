@@ -3,7 +3,7 @@
 % achieve this, it is using the "channel_rejection" function.
 
 function badchannels_subject=d1_bad_channels(subject_list,eeglab_ICA_bool,locs,datapath,icapath,resfolder)
-badchannels_subject=zeros(8,10,61,'int8');
+badchannels_subject=zeros(8,10,61,'logical');
 tstart=tic;
 if ~eeglab_ICA_bool
     load_path=strcat(resfolder,"\bad_channels.mat");
@@ -29,7 +29,6 @@ close(findall(0,'type','figure','tag','TMWWaitbar'))
                 mkdir(strcat(icapath,'\',subject_list(i)));
             end
         end
-        disp(subject_list(i))
         
         for j=1:10
             
@@ -37,6 +36,8 @@ close(findall(0,'type','figure','tag','TMWWaitbar'))
                 waiter=waitbar(0,'Calculating...','Name','Progress');
             end
             waitbar(((j-1)+((i-1)*10))/80,waiter,strcat('Preparing run ',string(j), ' from subject  ',string(subject_list(i))),'Name','Progress');
+            
+            
             filename = filenames(j+2).name;
             path=append(curr_folder,'\',filename);
             if eeglab_ICA_bool

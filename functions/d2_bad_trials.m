@@ -10,6 +10,7 @@ if eeglab_ica_bool
     if exist("bad_channels_with_ica.mat","file")
         bad_channels=load("bad_channels_with_ica.mat","badchannels_subject");
         bad_channels=bad_channels.badchannels_subject;
+        disp(size(bad_channels))
     else
         waitfor(msgbox('D1 has not been executed. Please execute D1 first.'))
         return
@@ -25,38 +26,9 @@ else
 end
     
 if movement_code==1536
-    if eeglab_ica_bool
-        load_file=strcat(resfolder,"\bad_trials_1536_with_ica.mat");
-        if exist(load_file,"file")
-            return
-        else
-            boxmsg="Calculating bad trials for Elbow flexion";
-        end
-    else
-        load_file=strcat(resfolder,"\bad_trials_1536.mat");
-        if exist(load_file,"file")
-            return
-        else
-            boxmsg="Calculating bad trials for Elbow flexion";
-        end
-    end
-end
-if movement_code==1541
-    if eeglab_ica_bool
-        load_file=strcat(resfolder,"\bad_trials_1541_with_ica.mat");
-        if exist(load_file,"file")
-            return
-        else
-            boxmsg="Calculating bad trials for Hand Opening";
-        end
-    else
-        load_file=strcat(resfolder,"\bad_trials_1541.mat");
-        if exist(load_file,"file")
-            return
-        else
-            boxmsg="Calculating bad trials for Hand Opening";
-        end
-    end
+    boxmsg="Calculating bad trials for Elbow flexion";
+else
+   boxmsg="Calculating bad trials for Hand Opening";
 end
 
 close(findall(0,'type','figure','tag','TMWWaitbar'))
@@ -77,6 +49,7 @@ for i=1:length(subject_list)
         waitbar(((j-1)+((i-1)*10))/80,waiter,strcat('Preparing run ',string(j), ' from subject  ',string(subject_list(i))),'Name',boxmsg);
         filename = filenames(j+2).name;
         path=append(curr_folder,'\',filename);
+        
         sr=load(path);
         Events=sr.EEG.events(:,:);
         if ~eeglab_ica_bool
@@ -84,11 +57,14 @@ for i=1:length(subject_list)
             % Band-pass filtering (0.3-70Hz) all the EEG data (channels 1 to 61)
             filteredchannels=butterfilter(channels,70);
         else
-            icaname = icanames(j+2).name;
+            icaname = strcat('filtered_data_',string(j));
             icafile=append(icapath2,'\',icaname);
             sr=load(icafile);
             filteredchannels=sr.filtered_data(:,:);
         end
+        %runs are already different here
+        
+        
     
          % Signal segmentation- acquiring the different trials
         
@@ -120,31 +96,34 @@ clearvars channels sr
 % For each trial and EEG channel, subtract the mean value of each channel (zero-mean). 
 matrix_detrend=zeros(61,4352,60,8);
 
-if ~eeglab_ica_bool
-for z = 1:length(matrix(1,1,1,:))
-    for x = 1:length(matrix(:,1,1,1))
-        for y = 1:length(matrix(1,1,:,1))
-        temp_mean=mean(matrix(x,:,y,z));
-        matrix_detrend(x,:,y,z)=(matrix(x,:,y,z))-temp_mean;
+
+    for z = 1:length(matrix(1,1,1,:))
+        for x = 1:length(matrix(:,1,1,1))
+            for y = 1:length(matrix(1,1,:,1))
+            temp_mean=mean(matrix(x,:,y,z));
+            matrix_detrend(x,:,y,z)=(matrix(x,:,y,z))-temp_mean;
+            end
         end
     end
-end
-else
-    matrix_detrend=matrix;
-end
+    %matrix was already detrended. no need to detrend again.
+
+
 clearvars matrix
 %%
 % Here we mark the bad channels from the previous section (d1) as nan in the signal. 
 for q = 1:length(bad_channels(:,1,1)) %subjects
     for i = 1:length(bad_channels(1,:,1)) %runs
         a=bad_channels(q,i,:);
-        for j = a%channels
-            if j ~= 80
+        
+        for j = length(a)%channels
+            if a(j)
                 matrix_detrend(j,:, 1+(6*(i-1)):i*6,q)=NaN;
             end
         end
+        %plot(matrix_detrend(30,:,i,q))
     end
 end
+
 clearvars bad_channels
 %%
 % Calculating kurtosis
@@ -235,6 +214,8 @@ for i=1:8
    
     
 end
+%latest place for a mistake
+save("m_detr.mat","matrix_detrend",'-mat')
 grand_mean_matrix=squeeze(mean(mean_subject_matrix,3));
 clearvars matrix_detrend
 

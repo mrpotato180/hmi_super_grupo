@@ -19,12 +19,14 @@ zero_chan=zeros(size(filt_chan));
 for i=1:61
     zero_chan(i,:)=detrend(filt_chan(i,:),'constant');
 end
+figure
 
 
 kurt_chan=zeros(size(1:61));
 for i=1:61
     kurt_chan(i)=kurtosis(zero_chan(i,:));
 end
+plot((1:61),kurt_chan)
 
 sort_kurt=sort(kurt_chan);
 corr_kurt=sort_kurt(7:55);
@@ -37,7 +39,6 @@ elim_list=nan(size(1:61));
 for i=1:61
    if kurt_chan(i)>high_thresh || kurt_chan(i)<low_thresh
     elim_list(i) = true;
-    disp(i)
    end
 end
 
