@@ -33,7 +33,7 @@ sdv_kurt=std(corr_kurt);
 high_thresh=mean_kurt+5*sdv_kurt;
 low_thresh=mean_kurt-5*sdv_kurt;
 
-elim_list=nan(size(1:61));
+elim_list=false(size(1:61));
 for i=1:61
    if kurt_chan(i)>high_thresh || kurt_chan(i)<low_thresh
     elim_list(i) = true;
