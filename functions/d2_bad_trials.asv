@@ -128,8 +128,10 @@ for q = 1:length(bad_channels(:,1,1)) %subjects
     for i = 1:length(bad_channels(1,:,1)) %runs
         a=bad_channels(q,i,:);
         
-        for j = 1:length(a)%channels
+        for j = length(a)%channels
+            disp(strcat(string(q),string(i),string()))
             if a(j)==true
+                disp('in the if')
                 
                 matrix_detrend(j,:, 1+(6*(i-1)):i*6,q)=NaN;
                 
@@ -141,9 +143,9 @@ for q = 1:length(bad_channels(:,1,1)) %subjects
         %plot(matrix_detrend(30,:,i,q))
     end
 end
-% disp(sparse(squeeze(bad_channels(1,:,:))))
-% disp('Now cond matrix')
-% disp(sparse(~logical(squeeze(conditions_matrix(:,:,1)))))
+disp(sparse(squeeze(bad_channels(1,:,:))))
+disp('Now cond matrix')
+disp(sparse(~logical(squeeze(conditions_matrix(:,:,1)))))
 clearvars bad_channels
 %%
 % Calculating kurtosis

@@ -3,13 +3,13 @@ function create_table(channels,conditions,subject_list)
 %   Detailed explanation goes here
 
 if conditions(1) ==false
-    if conditions(2) == true
+    if conditions(2) == false
         to_load=["bad_trials_1536.mat","bad_trials_1541.mat"];
     else
         to_load=["bad_trials_1536_with_auto.mat","bad_trials_1541_with_auto.mat"];
     end
 elseif conditions(1) ==true
-    if conditions(2) == true
+    if conditions(2) == false
         to_load=["bad_trials_1536_with_ica.mat","bad_trials_1541_with_ica.mat"];
     else
         to_load=["bad_trials_1536_with_ica_with_auto.mat","bad_trials_1541_with_ica_with_auto.mat"];

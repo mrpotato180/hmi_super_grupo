@@ -23,7 +23,6 @@ end
 close(findall(0,'type','figure','tag','TMWWaitbar'))
     for i=1:length(subject_list)
         curr_folder=append(datapath,'\',subject_list(i));
-        filenames=dir(curr_folder);
         if eeglab_ICA_bool
             if ~exist(strcat(icapath,'\',subject_list(i)), 'dir')
                 mkdir(strcat(icapath,'\',subject_list(i)));
@@ -37,8 +36,18 @@ close(findall(0,'type','figure','tag','TMWWaitbar'))
             end
             waitbar(((j-1)+((i-1)*10))/80,waiter,strcat('Preparing run ',string(j), ' from subject  ',string(subject_list(i))),'Name','Progress');
             
-            
-            filename = filenames(j+2).name;
+            if j<10
+                run_code=strcat('0',string(j));
+            else
+                run_code=string(j);
+            end
+            curr_subject=subject_list(i);
+            if length(char(subject_list(i))) == 2
+            subject_code=strcat('0',extractAfter(curr_subject,1));
+            else
+            subject_code=strcat('1',extractAfter(curr_subject,2));
+            end
+            filename = strcat('ME_S',string(subject_code),'_r',string(run_code));
             path=append(curr_folder,'\',filename);
             if eeglab_ICA_bool
                 [badchannels_subject(i,j,:), filtered_data]= channel_rejection(path,eeglab_ICA_bool,locs);
@@ -64,6 +73,7 @@ if ~eeglab_ICA_bool
 else
         save_path=strcat(resfolder,"\bad_channels_with_ica.mat");
         save(save_path,"badchannels_subject")
+       
         clearvars -global EEG ALLCOM ALLEEG CURRENTSET CURRENTSTUDY PLUGINLIST STUDY LASTCOM
 
 end
