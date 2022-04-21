@@ -1,3 +1,5 @@
+
+
 movement_code=1541;
 subject_list=["S1", "S2", "S3", "S6", "S7", "S9", "S11", "S13"];
 conditions=[false,false];
@@ -72,10 +74,13 @@ out_matrix=nan(60,61,2560,8);
 for i=1:8
     for j=1:10
         for tr=1:6
-            if conditions_matrix(:,(j-1)*6+tr,i)==1
-                out_matrix((j-1)*6+tr,:,:,i)=signals_new(:,events(tr,3,j,i)-(2.5*512):events(tr,3,j,i)+(2.5*512)-1);
+            if conditions_matrix(:,(j-1)*6+tr,i)==1 
+                if events(tr,3,j,i) ~= 0
+                    out_matrix((j-1)*6+tr,:,:,i)=signals_new(:,events(tr,3,j,i)-(2.5*512):events(tr,3,j,i)+(2.5*512)-1);
+                    out_matrix((j-1)*6+tr,:,:,i)=out_matrix((j-1)*6+tr,:,:,i)-mean(out_matrix((j-1)*6+tr,:,:,i),2,'omitnan');
+                end
             end
-                out_matrix((j-1)*6+tr,:,:,i)=out_matrix((j-1)*6+tr,:,:,i)-mean(out_matrix((j-1)*6+tr,:,:,i),2,'omitnan');
+                
         end
     end
 end
