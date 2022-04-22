@@ -62,7 +62,7 @@ for i=1:length(subject_list)
             filename = strcat('ME_S',string(subject_code),'_r',string(run_code));
         path=append(curr_folder,'\',filename);
         
-        sr=load(path);
+        sr=load(fullfile(path));
         Events=sr.EEG.events(:,:);
         if ~eeglab_ica_bool
             channels=sr.EEG.data(1:61,:);
@@ -71,7 +71,7 @@ for i=1:length(subject_list)
         else
             icaname = strcat('filtered_data_',string(j));
             icafile=append(icapath2,'\',icaname);
-            sr=load(icafile);
+            sr=load(fullfile(icafile));
             filteredchannels=sr.filtered_data(:,:);
         end
         %runs are already different here

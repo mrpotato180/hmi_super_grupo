@@ -23,7 +23,7 @@ for i=1:length(subject_list)
         filename = filenames(j+2).name;
         
         path=append(curr_folder,'\',filename);
-        sr=load(path);
+        sr=load(fullfile(path));
         chanels_93(j,1:length(sr.EEG.data(1,:)),i)=sr.EEG.data(channel_number,:);
     end
 end

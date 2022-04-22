@@ -17,10 +17,10 @@ elseif conditions(1) ==true
 end
     %create a table of good trial percentage per user/movement
 
-    bad_trials_1536=load(to_load(1),"conditions_matrix");
+    bad_trials_1536=load(fullfile(to_load(1)),"conditions_matrix");
     bad_trials_1536=bad_trials_1536.conditions_matrix;
 
-    bad_trials_1541=load(to_load(2),"conditions_matrix");
+    bad_trials_1541=load(fullfile(to_load(2)),"conditions_matrix");
     bad_trials_1541=bad_trials_1541.conditions_matrix;
        
 

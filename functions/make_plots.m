@@ -9,7 +9,7 @@ for i=1:length(ms(1,1,:))
     
     plot(t,ms(mschannel,:,i))
     xlim([-2.5 6])
-    xline(2)
+    xline(-2)
     xline(0)
     title(subject_list(i))
 end
@@ -17,7 +17,7 @@ end
 figure;
 plot(t,gm(gmchannel,:))
 xlim([-2.5 6])
-xline(2)
+xline(-2)
 xline(0)
 title('Grand mean')
 xlabel('Time (s)')

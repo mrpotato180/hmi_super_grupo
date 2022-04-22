@@ -2,7 +2,7 @@
 function eegout=eeglab_ica(path,loc)
 %a function that automatically rejects components calculated by an acsobiro
 %ica decomposition
-load(path,"-mat",'EEG')
+load(fullfile(path),"-mat",'EEG')
 a=cat(1,EEG.data(62:64,:),EEG.data(1:61,:)); %add the EOG channels to the beginning of the variable
 a=butterfilter(a,70);%filter the signal, it was found it is better to filter before ica, not after
 
@@ -20,7 +20,7 @@ EEG = pop_importdata('dataformat','matlab','nbchan',0,'data','temp.mat','srate',
 EEG = eeg_checkset( EEG );
 
 %below is the typical eeglab ica procedure for any algorithm
-EEG.icawinv = sobi(EEG.data);
+EEG.icawinv = acsobiro(EEG.data);
 if isempty(EEG.icaweights)
     EEG.icaweights = pinv(EEG.icawinv);
 end
@@ -39,6 +39,7 @@ comp_rej_lst=[];
 
 for k=1:EEG.nbchan
     if EEG.etc.ic_classification.ICLabel.classifications(k,3)>0.85
+    %if EEG.etc.ic_classification.ICLabel.classifications(k,3)>0.5
         comp_rej_lst=[comp_rej_lst,k];
     end
     for i=[2,4,5,6,7]

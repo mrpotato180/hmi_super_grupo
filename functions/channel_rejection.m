@@ -1,6 +1,6 @@
 function [elim_list, zero_chan] = channel_rejection(path,ica,loc)
 %loads the run and returns bad channel numbers
-sr=load(path);
+sr=load(fullfile(path));
 channels=sr.EEG.data(1:61,:);
 fm=512;%Hz
 filt_chan=zeros(size(channels));
