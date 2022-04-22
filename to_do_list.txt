@@ -1,0 +1,14 @@
+como trabajar los datos en struct
+
+loc 64 eog - es correcto?
+
+full nan matrix. nan(60,61,5*512) de -2,5 a 2,5, con 0=inicio del movimiento
+
+change to common mean reference instead of mastoid reference. for the common mean, only good channels are taken. this is done by trial.
+
+then obtain the mean potential
+
+-100 to 100 ms window around the peak which is then averaged.
+
+look at a topoplot (chanlocs) and add a colorbar
+
