@@ -17,12 +17,12 @@ chanels_93=zeros(10,200000,8);
 
 for i=1:length(subject_list)
     folder_path=datapath;
-    curr_folder=append(folder_path,'\',subject_list(i));
+    curr_folder=append(folder_path,filesep,subject_list(i));
     filenames=dir(curr_folder);
     for j=1:10
         filename = filenames(j+2).name;
         
-        path=append(curr_folder,'\',filename);
+        path=append(curr_folder,filesep,filename);
         sr=load(fullfile(path));
         chanels_93(j,1:length(sr.EEG.data(1,:)),i)=sr.EEG.data(channel_number,:);
     end

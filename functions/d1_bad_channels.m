@@ -6,14 +6,14 @@ function badchannels_subject=d1_bad_channels(subject_list,eeglab_ICA_bool,locs,d
 badchannels_subject=zeros(8,10,61,'logical');
 tstart=tic;
 if ~eeglab_ICA_bool
-    load_path=strcat(resfolder,"\bad_channels.mat");
+    load_path=strcat(resfolder,filesep,"bad_channels.mat");
     if exist(load_path,"file")
     msgbox('The old bad channel file was taken.ICA is off.');
     return
     end
 end
 if eeglab_ICA_bool
-    load_path=strcat(resfolder,"\bad_channels_with_ica.mat");
+    load_path=strcat(resfolder,filesep,"bad_channels_with_ica.mat");
     if exist(load_path,"file")
     msgbox('The old bad channel file was taken. ICA is on.');
     return
@@ -24,8 +24,8 @@ close(findall(0,'type','figure','tag','TMWWaitbar'))
     for i=1:length(subject_list)
         curr_folder=append(datapath,'\',subject_list(i));
         if eeglab_ICA_bool
-            if ~exist(strcat(icapath,'\',subject_list(i)), 'dir')
-                mkdir(strcat(icapath,'\',subject_list(i)));
+            if ~exist(strcat(icapath,filesep,subject_list(i)), 'dir')
+                mkdir(strcat(icapath,filesep,subject_list(i)));
             end
         end
         
@@ -48,14 +48,14 @@ close(findall(0,'type','figure','tag','TMWWaitbar'))
             subject_code=strcat('1',extractAfter(curr_subject,2));
             end
             filename = strcat('ME_S',string(subject_code),'_r',string(run_code));
-            path=append(curr_folder,'\',filename);
+            path=append(curr_folder,filesep,filename);
             if eeglab_ICA_bool
                 [badchannels_subject(i,j,:), filtered_data]= channel_rejection(path,eeglab_ICA_bool,locs);
             else
                 [badchannels_subject(i,j,:),filtered_data]= channel_rejection(path,eeglab_ICA_bool, 'a');
             end
             if eeglab_ICA_bool
-                save_path=strcat(icapath,'\',subject_list(i),'\filtered_data_',string(j),'.mat');
+                save_path=strcat(icapath,filesep,subject_list(i),filesep,'filtered_data_',string(j),'.mat');
                 save(save_path,"filtered_data")
             end
           
@@ -67,11 +67,11 @@ close(findall(0,'type','figure','tag','TMWWaitbar'))
     
     %C=num2cell(filtered_data_subject,[1,]);
 if ~eeglab_ICA_bool
-        save_path=strcat(resfolder,"\bad_channels.mat");
+        save_path=strcat(resfolder,filesep,"bad_channels.mat");
         save(save_path,"badchannels_subject")
 
 else
-        save_path=strcat(resfolder,"\bad_channels_with_ica.mat");
+        save_path=strcat(resfolder,filesep,"bad_channels_with_ica.mat");
         save(save_path,"badchannels_subject")
        
         clearvars -global EEG ALLCOM ALLEEG CURRENTSET CURRENTSTUDY PLUGINLIST STUDY LASTCOM

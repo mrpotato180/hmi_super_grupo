@@ -38,10 +38,10 @@ close(findall(0,'type','figure','tag','TMWWaitbar'))
 
 for i=1:length(subject_list)
     if eeglab_ica_bool
-        icapath2=append(icapath,'\',subject_list(i));
+        icapath2=append(icapath,filesep,subject_list(i));
         
     end
-    curr_folder=append(datapath,'\',subject_list(i));
+    curr_folder=append(datapath,filesep,subject_list(i));
     
     for j=1:10
         if isempty(findall(0,'type','figure','tag','TMWWaitbar'))
@@ -60,7 +60,7 @@ for i=1:length(subject_list)
             subject_code=strcat('1',extractAfter(curr_subject,2));
         end
             filename = strcat('ME_S',string(subject_code),'_r',string(run_code));
-        path=append(curr_folder,'\',filename);
+        path=append(curr_folder,filesep,filename);
         
         sr=load(fullfile(path));
         Events=sr.EEG.events(:,:);
@@ -70,7 +70,7 @@ for i=1:length(subject_list)
             filteredchannels=butterfilter(channels,70);
         else
             icaname = strcat('filtered_data_',string(j));
-            icafile=append(icapath2,'\',icaname);
+            icafile=append(icapath2,filesep,icaname);
             sr=load(fullfile(icafile));
             filteredchannels=sr.filtered_data(:,:);
         end
@@ -240,46 +240,46 @@ clearvars matrix_detrend
 %%
 if movement_code==1536
     if eeglab_ica_bool && ~auto_detect_movement
-        bt=strcat(resfolder,'\bad_trials_1536_with_ica.mat');
-        et=strcat(resfolder,'\events_matrix_1536_with_ica.mat');
+        bt=strcat(resfolder,filesep,'bad_trials_1536_with_ica.mat');
+        et=strcat(resfolder,filesep,'events_matrix_1536_with_ica.mat');
         save(bt, "conditions_matrix")
         save(et, "events_matrix_1536")
     elseif eeglab_ica_bool && auto_detect_movement
-        bt=strcat(resfolder,'\bad_trials_1536_with_ica_with_auto.mat');
-        et=strcat(resfolder,'\events_matrix_1536_with_ica_with_auto.mat');
+        bt=strcat(resfolder,filesep,'bad_trials_1536_with_ica_with_auto.mat');
+        et=strcat(resfolder,filesep,'events_matrix_1536_with_ica_with_auto.mat');
         save(bt, "conditions_matrix")
         save(et, "events_matrix_1536")
     elseif ~eeglab_ica_bool && auto_detect_movement
-        bt=strcat(resfolder,'\bad_trials_1536_with_auto.mat');
-        et=strcat(resfolder,'\events_matrix_1536_with_auto.mat');
+        bt=strcat(resfolder,filesep,'bad_trials_1536_with_auto.mat');
+        et=strcat(resfolder,filesep,'events_matrix_1536_with_auto.mat');
         save(bt, "conditions_matrix")
         save(et, "events_matrix_1536")
     else
-        bt=strcat(resfolder,'\bad_trials_1536.mat');
-        et=strcat(resfolder,'\events_matrix_1536.mat');
+        bt=strcat(resfolder,filesep,'bad_trials_1536.mat');
+        et=strcat(resfolder,filesep,'events_matrix_1536.mat');
         save(bt, "conditions_matrix")
         save(et, "events_matrix_1536")
     end
 end
 if movement_code==1541
    if eeglab_ica_bool && ~auto_detect_movement
-        bt=strcat(resfolder,'\bad_trials_1541_with_ica.mat');
-        et=strcat(resfolder,'\events_matrix_1541_with_ica.mat');
+        bt=strcat(resfolder,filesep,'bad_trials_1541_with_ica.mat');
+        et=strcat(resfolder,filesep,'events_matrix_1541_with_ica.mat');
         save(bt, "conditions_matrix")
         save(et, "events_matrix_1536")
     elseif eeglab_ica_bool && auto_detect_movement
-        bt=strcat(resfolder,'\bad_trials_1541_with_ica_with_auto.mat');
-        et=strcat(resfolder,'\events_matrix_1541_with_ica_with_auto.mat');
+        bt=strcat(resfolder,filesep,'bad_trials_1541_with_ica_with_auto.mat');
+        et=strcat(resfolder,filesep,'events_matrix_1541_with_ica_with_auto.mat');
         save(bt, "conditions_matrix")
         save(et, "events_matrix_1536")
     elseif ~eeglab_ica_bool && auto_detect_movement
-        bt=strcat(resfolder,'\bad_trials_1541_with_auto.mat');
-        et=strcat(resfolder,'\events_matrix_1541_with_auto.mat');
+        bt=strcat(resfolder,filesep,'bad_trials_1541_with_auto.mat');
+        et=strcat(resfolder,filesep,'events_matrix_1541_with_auto.mat');
         save(bt, "conditions_matrix")
         save(et, "events_matrix_1536")
     else
-        bt=strcat(resfolder,'\bad_trials_1541.mat');
-        et=strcat(resfolder,'\events_matrix_1541.mat');
+        bt=strcat(resfolder,filesep,'bad_trials_1541.mat');
+        et=strcat(resfolder,filesep,'events_matrix_1541.mat');
         save(bt, "conditions_matrix")
         save(et, "events_matrix_1536")
     end
