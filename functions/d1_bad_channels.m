@@ -22,7 +22,7 @@ if eeglab_ICA_bool
 end
 close(findall(0,'type','figure','tag','TMWWaitbar'))
     for i=1:length(subject_list)
-        curr_folder=append(datapath,'\',subject_list(i));
+        curr_folder=append(datapath,filesep,subject_list(i));
         if eeglab_ICA_bool
             if ~exist(strcat(icapath,filesep,subject_list(i)), 'dir')
                 mkdir(strcat(icapath,filesep,subject_list(i)));
