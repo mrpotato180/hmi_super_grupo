@@ -1,0 +1,45 @@
+Datos:	
+	6 EEG-FMRI runs
+	10 sujetos  cada uno
+	48 blocks of 20s rest +20s task - cada uno
+	480*40s ~= 320 min = 5 horas 20 min
+	Muchos datos, pero bueno para hacer el average
+	
+hay que pensar - qué imagenes nos parecerian interesantes?
+
+ERP?
+
+comparacion pre-post motor imagery?
+
+un clustering/una clasificacion de las diferentes areas? de qué?
+	de la anatomia?
+	de la activacion segun el task (clasificacion)?
+	de los bloques en un task(clustering)?
+
+
+Otras cosas interesantes:
+	-el otro dia vimos raw data, pero tambien hay datos ya 	preprocesados
+
+	-hay neurofeedback scores (no entiendo muy bien lo que son)
+
+	- los datos de fmri en bold-nf estan en un struct matlab
+
+	- en ese struct, el campo method contiene la region de interes
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
