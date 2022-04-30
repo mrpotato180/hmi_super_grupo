@@ -7,7 +7,7 @@ if event_code == 1536
 elseif event_code == 1541
     channel_number=69;
     thres_variable=-0.028;
-    thres_variable2=0.005;
+    thres_variable2=0.005;    
 end
 
 
@@ -29,7 +29,7 @@ for i=1:length(subject_list)
 end
 %events_matrix_1536=zeros(6,3,10,8);
 
-samples_of_movement_1536=zeros(6,3,10,8);
+samples_of_movement_1536=zeros(6,4,10,8);
 samples_of_movement_1536(:,1:2,:,:)=events_matrix_1536(:,1:2,:,:);
 chanels_93_derivative=zeros(10,199999,8);
 
@@ -49,7 +49,21 @@ for x = 1:length(chanels_93(1,1,:)) %8
                         count2=count2+1;
                     end
                     samples_of_movement_1536(i,3,y,x)=events_matrix_1536(i,2,y,x)+count2;
+                    [localmax,locallatency]=max(chanels_93(y,samples_of_movement_1536(i,3,y,x):samples_of_movement_1536(i,3,y,x)+1800,x));
+                    count3=count2+locallatency;
                     count2=0;
+                    while abs(chanels_93(y,events_matrix_1536(i,2,y,x)+count3,x))>0.5*localmax && count3 < 20000
+                        count3=count3+1;
+                    end
+                    while (abs(chanels_93_derivative(y,events_matrix_1536(i,2,y,x)+count3,x))> thres_variable2 || abs(chanels_93_derivative(y,events_matrix_1536(i,2,y,x)+count3,x))== 0) && events_matrix_1536(i,2,y,x)+ count3 <199998  
+                        count3=count3+1;
+                    end
+                    if count3 >= 15000
+                        samples_of_movement_1536(i,4,y,x)=0;
+                    else
+                        samples_of_movement_1536(i,4,y,x)=events_matrix_1536(i,2,y,x)+count3;
+                    end
+
                 else
                     samples_of_movement_1536(i,3,y,x)=0;
                 end
@@ -61,7 +75,20 @@ for x = 1:length(chanels_93(1,1,:)) %8
                         count2=count2+1;
                     end
                     samples_of_movement_1536(i,3,y,x)=events_matrix_1536(i,2,y,x)+count2;
+                    [localmax,locallatency]=min(chanels_93(y,samples_of_movement_1536(i,3,y,x):samples_of_movement_1536(i,3,y,x)+1300,x));
+                    count3=count2+locallatency;
                     count2=0;
+                    while abs(chanels_93(y,events_matrix_1536(i,2,y,x)+count3,x))>0.5*abs(localmax-chanels_93(y,samples_of_movement_1536(i,3,y,x),x)) && count3 < 20000
+                        count3=count3+1;
+                    end
+                    while (abs(chanels_93_derivative(y,events_matrix_1536(i,2,y,x)+count3,x))> thres_variable2 || abs(chanels_93_derivative(y,events_matrix_1536(i,2,y,x)+count3,x))== 0) && events_matrix_1536(i,2,y,x)+ count3 <199998  
+                        count3=count3+1;
+                    end
+                    if count3 >= 15000
+                        samples_of_movement_1536(i,4,y,x)=0;
+                    else
+                        samples_of_movement_1536(i,4,y,x)=events_matrix_1536(i,2,y,x)+count3;
+                    end
                 else
                     samples_of_movement_1536(i,3,y,x)=0;
                 end
