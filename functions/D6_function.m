@@ -1,4 +1,4 @@
-function [grand_mean_mu,grand_mean_beta,ERD_mu,ERD_beta] = D6_function(movement_code,conditions,subject_list,datapath,icapath)
+function [grand_mean_mu,grand_mean_beta,ERD_mu,ERD_beta,grand_mean_mu_ERP,grand_mean_beta_ERP,ERP_mu,ERP_beta] = D6_function(movement_code,conditions,subject_list,datapath,icapath, ERP)
 
 if movement_code==1541
     if conditions(1) == true
@@ -48,6 +48,8 @@ conditions_matrix=condit; %61,60,8
 events=events.events_matrix_1536;
 out_matrix_mu=nan(60,61,4096,8);
 out_matrix_beta=nan(60,61,4096,8);
+out_matrix_mu_ERP=nan(60,61,6144,8);
+out_matrix_beta_ERP=nan(60,61,6144,8);
 
 for i=1:length(subject_list)
 
@@ -86,19 +88,23 @@ for i=1:length(subject_list)
 
         mu_signals_new=bandpassfilter(sr,8,13);
         beta_signals_new=bandpassfilter(sr,14,30);
+        
 
         for tr=1:6
             for ch=1:61
                 if conditions_matrix(ch,(j-1)*6+tr,i)==1
-
                     if events(tr,3,j,i) ~= 0
                         out_matrix_mu((j-1)*6+tr,ch,:,i)=mu_signals_new(ch,events(tr,3,j,i)-(2.5*512):events(tr,3,j,i)+(5.5*512)-1);
                         out_matrix_beta((j-1)*6+tr,ch,:,i)=beta_signals_new(ch,events(tr,3,j,i)-(2.5*512):events(tr,3,j,i)+(5.5*512)-1);
-
+                        if ERP
+                            if events(tr,4,j,i) ~= 0
+                                out_matrix_mu_ERP((j-1)*6+tr,ch,:,i)=mu_signals_new(ch,events(tr,4,j,i)-(8.5*512):events(tr,4,j,i)+(3.5*512)-1);
+                                out_matrix_beta_ERP((j-1)*6+tr,ch,:,i)=beta_signals_new(ch,events(tr,4,j,i)-(8.5*512):events(tr,4,j,i)+(3.5*512)-1);
+                            end
+                        end
                     end
                 end
             end
-
         end
     end
 end
@@ -113,6 +119,24 @@ for i=1:8
 
         end
     end
+end
+
+%6145 length
+if ERP
+    musignals_ERP=out_matrix_mu_ERP;
+    betasignals_ERP=out_matrix_beta_ERP;
+    for i=1:8
+        for tr=1:60
+            for ch=1:61
+                musignals_ERP(tr,ch,:,i)=out_matrix_mu_ERP(tr,ch,:,i)-mean(out_matrix_mu_ERP(tr,:,:,i),2,'omitnan');
+                betasignals_ERP(tr,ch,:,i)=out_matrix_beta_ERP(tr,ch,:,i)-mean(out_matrix_beta_ERP(tr,:,:,i),2,'omitnan');
+
+            end
+        end
+    end
+end
+
+clearvars out_matrix_mu out_matrix_beta
 %% will the real d6 please stand up
 
 muenergy=out_matrix_mu.^2;
@@ -142,6 +166,30 @@ end
 grand_mean_mu=squeeze(mean(ERD_mu,3));
 grand_mean_beta=squeeze(mean(ERD_beta,3));
 
+if ERP
+    muenergy_ERP=musignals_ERP.^2;
+    betaenergy_ERP=betasignals_ERP.^2;
 
+    mu_av_energy_ERP=squeeze(mean(muenergy_ERP,1,'omitnan'));
+    beta_av_energy_ERP=squeeze(mean(betaenergy_ERP,1,'omitnan'));
+
+    mu_mov_av_ERP=movmean(mu_av_energy_ERP,round(0.15*512),2);
+    beta_mov_av_ERP=movmean(beta_av_energy_ERP,round(0.15*512),2);
+
+    ERP_mu=nan(61,6144,8);
+    ERP_beta=nan(61,6144,8);
+
+    for subject=1:8
+        for ch=1:61
+
+            ERP_mu(ch,:,subject)=100*(mu_mov_av_ERP(ch,:,subject)-mu_ref(ch,subject))/mu_ref(ch,subject);
+            ERP_beta(ch,:,subject)=100*(beta_mov_av_ERP(ch,:,subject)-beta_ref(ch,subject))/beta_ref(ch,subject);
+        end
+    end
+
+
+    grand_mean_mu_ERP=squeeze(mean(ERP_mu,3));
+    grand_mean_beta_ERP=squeeze(mean(ERP_beta,3));
+end
 end
 
