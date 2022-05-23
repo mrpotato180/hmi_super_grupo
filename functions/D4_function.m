@@ -1,4 +1,4 @@
-function [grand_mean_matrix,mean_subject_matrix] = D4_function(movement_code,conditions,subject_list,datapath,icapath)
+function [grand_mean_matrix,mean_subject_matrix,johnny_walker] = D4_function(movement_code,conditions,subject_list,datapath,icapath)
 
 
 if movement_code==1541

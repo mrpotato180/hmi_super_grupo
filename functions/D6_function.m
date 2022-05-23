@@ -1,4 +1,4 @@
-function [grand_mean_mu,grand_mean_beta,ERD_mu,ERD_beta,grand_mean_mu_ERP,grand_mean_beta_ERP,ERP_mu,ERP_beta] = D6_function(movement_code,conditions,subject_list,datapath,icapath, ERP)
+function [grand_mean_mu,grand_mean_beta,ERD_mu,ERD_beta,grand_mean_mu_ERP,grand_mean_beta_ERP,ERP_mu,ERP_beta,ERD_mu_pj,ERD_beta_pj,ERP_mu_pj,ERP_beta_pj] = D6_function(movement_code,conditions,subject_list,datapath,icapath, ERP)
 
 if movement_code==1541
     if conditions(1) == true
@@ -191,5 +191,40 @@ if ERP
     grand_mean_mu_ERP=squeeze(mean(ERP_mu,3));
     grand_mean_beta_ERP=squeeze(mean(ERP_beta,3));
 end
+
+%extra for the project of dades
+
+ERD_mu_pj=nan(60,61,4096,8);
+ERD_beta_pj=nan(60,61,4096,8);
+
+mu_mov_av_pj=movmean(muenergy,round(0.15*512),3);
+beta_mov_av_pj=movmean(betaenergy,round(0.15*512),3);
+
+for subject=1:8
+    for tr=1:60
+        for ch=1:61
+
+            ERD_mu_pj(tr,ch,:,subject)=100*(mu_mov_av_pj(tr,ch,:,subject)-mu_ref(ch,subject))/mu_ref(ch,subject);
+            ERD_beta_pj(tr,ch,:,subject)=100*(beta_mov_av_pj(tr,ch,:,subject)-beta_ref(ch,subject))/beta_ref(ch,subject);
+        end
+    end
+end
+
+ERP_mu_pj=nan(60,61,6144,8);
+ERP_beta_pj=nan(60,61,6144,8);
+
+mu_mov_av_pj=movmean(muenergy_ERP,round(0.15*512),3);
+beta_mov_av_pj=movmean(betaenergy_ERP,round(0.15*512),3);
+
+for subject=1:8
+    for tr=1:60
+        for ch=1:61
+
+            ERP_mu_pj(tr,ch,:,subject)=100*(mu_mov_av_pj(tr,ch,:,subject)-mu_ref(ch,subject))/mu_ref(ch,subject);
+            ERP_beta_pj(tr,ch,:,subject)=100*(beta_mov_av_pj(tr,ch,:,subject)-beta_ref(ch,subject))/beta_ref(ch,subject);
+        end
+    end
+end
+
 end
 
