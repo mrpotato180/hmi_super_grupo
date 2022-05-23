@@ -1,11 +1,11 @@
-function [grand_mean_mu,grand_mean_beta,ERD_mu,ERD_beta,grand_mean_mu_ERP,grand_mean_beta_ERP,ERP_mu,ERP_beta,ERD_mu_pj,ERD_beta_pj,ERP_mu_pj,ERP_beta_pj] = D6_function(movement_code,conditions,subject_list,datapath,icapath, ERP)
+function [grand_mean_mu,grand_mean_beta,ERD_mu,ERD_beta,grand_mean_mu_ERP,grand_mean_beta_ERP,ERP_mu,ERP_beta,ERD_mu_pj,ERD_beta_pj,ERP_mu_pj,ERP_beta_pj] = D6_function(movement_code,conditions,subject_list,datapath,icapath, ERP, project)
 
 if movement_code==1541
     if conditions(1) == true
         basefolder=dir(icapath);
         if conditions(2)==true
             condit=load("bad_trials_1541_with_ica_with_auto.mat", "conditions_matrix");
-            events=load("events_matrix_1541_with_ica_with_auto.mat","events_matrix_1536");
+            events=load("events_matrix_1541_with_auto.mat","events_matrix_1536");
         else
             condit=load("bad_trials_1541_with_ica.mat", "conditions_matrix");
             events=load("events_matrix_1541_with_ica.mat","events_matrix_1536");
@@ -26,7 +26,7 @@ else
         basefolder=dir(icapath);
         if conditions(2)==true
             condit=load("bad_trials_1536_with_ica_with_auto.mat", "conditions_matrix");
-            events=load("events_matrix_1536_with_ica_with_auto.mat","events_matrix_1536");
+            events=load("events_matrix_1536_with_auto.mat","events_matrix_1536");
         else
             condit=load("bad_trials_1536_with_ica.mat", "conditions_matrix");
             events=load("events_matrix_1536_with_ica.mat","events_matrix_1536");
@@ -136,11 +136,13 @@ if ERP
     end
 end
 
-clearvars out_matrix_mu out_matrix_beta
+
 %% will the real d6 please stand up
 
 muenergy=out_matrix_mu.^2;
 betaenergy=out_matrix_beta.^2;
+
+clearvars out_matrix_mu out_matrix_beta
 
 mu_av_energy=squeeze(mean(muenergy,1,'omitnan'));
 beta_av_energy=squeeze(mean(betaenergy,1,'omitnan'));
@@ -193,35 +195,36 @@ if ERP
 end
 
 %extra for the project of dades
-
-ERD_mu_pj=nan(60,61,4096,8);
-ERD_beta_pj=nan(60,61,4096,8);
-
-mu_mov_av_pj=movmean(muenergy,round(0.15*512),3);
-beta_mov_av_pj=movmean(betaenergy,round(0.15*512),3);
-
-for subject=1:8
-    for tr=1:60
-        for ch=1:61
-
-            ERD_mu_pj(tr,ch,:,subject)=100*(mu_mov_av_pj(tr,ch,:,subject)-mu_ref(ch,subject))/mu_ref(ch,subject);
-            ERD_beta_pj(tr,ch,:,subject)=100*(beta_mov_av_pj(tr,ch,:,subject)-beta_ref(ch,subject))/beta_ref(ch,subject);
+if project
+    ERD_mu_pj=nan(60,61,4096,8);
+    ERD_beta_pj=nan(60,61,4096,8);
+    
+    mu_mov_av_pj=movmean(muenergy,round(0.15*512),3);
+    beta_mov_av_pj=movmean(betaenergy,round(0.15*512),3);
+    
+    for subject=1:8
+        for tr=1:60
+            for ch=1:61
+    
+                ERD_mu_pj(tr,ch,:,subject)=100*(mu_mov_av_pj(tr,ch,:,subject)-mu_ref(ch,subject))/mu_ref(ch,subject);
+                ERD_beta_pj(tr,ch,:,subject)=100*(beta_mov_av_pj(tr,ch,:,subject)-beta_ref(ch,subject))/beta_ref(ch,subject);
+            end
         end
     end
-end
-
-ERP_mu_pj=nan(60,61,6144,8);
-ERP_beta_pj=nan(60,61,6144,8);
-
-mu_mov_av_pj=movmean(muenergy_ERP,round(0.15*512),3);
-beta_mov_av_pj=movmean(betaenergy_ERP,round(0.15*512),3);
-
-for subject=1:8
-    for tr=1:60
-        for ch=1:61
-
-            ERP_mu_pj(tr,ch,:,subject)=100*(mu_mov_av_pj(tr,ch,:,subject)-mu_ref(ch,subject))/mu_ref(ch,subject);
-            ERP_beta_pj(tr,ch,:,subject)=100*(beta_mov_av_pj(tr,ch,:,subject)-beta_ref(ch,subject))/beta_ref(ch,subject);
+    
+    ERP_mu_pj=nan(60,61,6144,8);
+    ERP_beta_pj=nan(60,61,6144,8);
+    
+    mu_mov_av_pj=movmean(muenergy_ERP,round(0.15*512),3);
+    beta_mov_av_pj=movmean(betaenergy_ERP,round(0.15*512),3);
+    
+    for subject=1:8
+        for tr=1:60
+            for ch=1:61
+    
+                ERP_mu_pj(tr,ch,:,subject)=100*(mu_mov_av_pj(tr,ch,:,subject)-mu_ref(ch,subject))/mu_ref(ch,subject);
+                ERP_beta_pj(tr,ch,:,subject)=100*(beta_mov_av_pj(tr,ch,:,subject)-beta_ref(ch,subject))/beta_ref(ch,subject);
+            end
         end
     end
 end
