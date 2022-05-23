@@ -232,8 +232,13 @@ for i=1:8
     
    mean_subject_matrix(:,:,i)=mean(matrix_detrend(:,:,:,i),3,'omitnan');
    
-    
+   export_matrix=squeeze(matrix_detrend(:,:,:,i));
+   export_matrix(isnan(export_matrix))=200000;
+   save(strcat('data_subj_',string(i),'.tsv'),"export_matrix",'-ascii', '-double','-tabs')
+   save(strcat('data_subj_',string(i),'.mat'),"export_matrix",'-mat')
 end
+
+
 grand_mean_matrix=squeeze(mean(mean_subject_matrix,3));
 
 %%
