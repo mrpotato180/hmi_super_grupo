@@ -1,4 +1,4 @@
-function [mean_subject_matrix, grand_mean_matrix]=d2_bad_trials(subject_list,movement_code,eeglab_ica_bool,auto_detect_movement,datapath,icapath,resfolder)
+function [mean_subject_matrix, grand_mean_matrix, matrix_detrend]=d2_bad_trials(subject_list,movement_code,eeglab_ica_bool,auto_detect_movement,datapath,icapath,resfolder)
 cont=0;
 cont2=1;
 count3=1;
@@ -235,7 +235,6 @@ for i=1:8
     
 end
 grand_mean_matrix=squeeze(mean(mean_subject_matrix,3));
-clearvars matrix_detrend
 
 %%
 if movement_code==1536
