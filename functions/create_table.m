@@ -32,6 +32,11 @@ end
     
     end
 T=round(T,4)*100;
+mean1= mean(T(:,1)); std1=std(T(:,1));
+mean2= mean(T(:,2)); std2=std(T(:,2));
+
 T=array2table(T,"RowNames",subject_list,"VariableNames",["Elbow Flexion", "Hand Opening"]);
 disp(T)
+disp(["Mean elbow flexion: " mean1 " with sdv: " std1])
+disp(["Mean hand opening: " mean2 " with sdv: " std2])
 end

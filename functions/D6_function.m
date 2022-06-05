@@ -110,12 +110,14 @@ for i=1:length(subject_list)
 end
 clearvars sr mu_signals_new beta_signals_new events
 %%
+musignals=out_matrix_mu;
+betasignals=out_matrix_beta;
 
 for i=1:8
     for tr=1:60
         for ch=1:61
-                out_matrix_mu(tr,ch,:,i)=out_matrix_mu(tr,ch,:,i)-mean(out_matrix_mu(tr,:,:,i),2,'omitnan');
-                out_matrix_beta(tr,ch,:,i)=out_matrix_beta(tr,ch,:,i)-mean(out_matrix_beta(tr,:,:,i),2,'omitnan');
+                musignals(tr,ch,:,i)=out_matrix_mu(tr,ch,:,i)-mean(out_matrix_mu(tr,:,:,i),2,'omitnan');
+                betasignals(tr,ch,:,i)=out_matrix_beta(tr,ch,:,i)-mean(out_matrix_beta(tr,:,:,i),2,'omitnan');
 
         end
     end
@@ -139,8 +141,8 @@ end
 
 %% will the real d6 please stand up
 
-muenergy=out_matrix_mu.^2;
-betaenergy=out_matrix_beta.^2;
+muenergy=musignals.^2;
+betaenergy=betasignals.^2;
 
 clearvars out_matrix_mu out_matrix_beta
 
